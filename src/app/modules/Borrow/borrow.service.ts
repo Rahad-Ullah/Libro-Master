@@ -1,6 +1,8 @@
 import { BorrowRecord } from "@prisma/client";
 import prisma from "../../../utils/prisma";
+import { calculateOverdueBooks } from "../../../utils/calculateOverdueBooks";
 
+// borrow a book
 const borrowBookIntoDB = async (payload: BorrowRecord) => {
   const memberData = await prisma.member.findUnique({
     where: {
@@ -31,6 +33,30 @@ const borrowBookIntoDB = async (payload: BorrowRecord) => {
   return result;
 };
 
+// get overdue borrow books
+const getOverdueBorrowBooksFromBD = async () => {
+  const borrowRecords = await prisma.borrowRecord.findMany({
+    include: {
+      book: {
+        select: {
+          title: true,
+        },
+      },
+      member: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+
+  // Filter overdue records and calculate overdue days
+  const overdueRecords = calculateOverdueBooks(borrowRecords);
+
+  return overdueRecords;
+};
+
+// return book
 const returnBookIntoDB = async (borrowId: string) => {
   const borrowData = await prisma.borrowRecord.findUnique({
     where: {
@@ -55,4 +81,5 @@ const returnBookIntoDB = async (borrowId: string) => {
 export const borrowRecordServices = {
   borrowBookIntoDB,
   returnBookIntoDB,
+  getOverdueBorrowBooksFromBD,
 };
