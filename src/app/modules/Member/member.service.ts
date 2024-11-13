@@ -61,9 +61,32 @@ const updateMemberIntoDB = async (memberId: string, payload: Partial<Member>) =>
   return result;
 };
 
+// delete single member
+const deleteMemberFromDB = async (memberId: string) => {
+  const memberData = await prisma.member.findUnique({
+    where: {
+      memberId
+    }
+  })
+
+  // check if member exists
+  if(!memberData){
+    throw new Error('Member does not exist')
+  }
+
+  const result = await prisma.member.delete({
+    where: {
+      memberId
+    }
+  })
+
+  return result;
+};
+
 export const memberServices = {
   createMemberIntoDB,
   getAllMembersFromDB,
   getSingleMemberFromDB,
   updateMemberIntoDB,
+  deleteMemberFromDB,
 };

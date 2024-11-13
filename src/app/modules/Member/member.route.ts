@@ -20,4 +20,7 @@ router.get("/:memberId", memberControllers.getSingleMember);
 // update member by memberId
 router.put("/:memberId", validateRequest(memberValidationSchemas.updateValidationSchema), memberControllers.updateMember);
 
+// delete member by memberId
+router.delete("/:memberId", memberControllers.deleteMember);
+
 export const memberRoutes = router;
