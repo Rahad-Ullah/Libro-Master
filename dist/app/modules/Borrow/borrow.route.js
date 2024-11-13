@@ -11,4 +11,6 @@ const borrow_validation_1 = require("./borrow.validation");
 const router = express_1.default.Router();
 // borrow a book
 router.post("/", (0, validateRequest_1.default)(borrow_validation_1.borrowRecordValidationSchemas.createValidationSchema), borrow_controller_1.borrowRecordControllers.borrowBook);
+// get overdue borrow books
+router.get("/overdue", borrow_controller_1.borrowRecordControllers.getOverdueBorrowBooks);
 exports.borrowRecordRoutes = router;

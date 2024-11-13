@@ -27,10 +27,28 @@ const borrowBook = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
         data: result,
     });
 }));
+// get overdue borrow books
+const getOverdueBorrowBooks = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield borrow_service_1.borrowRecordServices.getOverdueBorrowBooksFromBD();
+    if (result.length < 1) {
+        (0, sendResponse_1.sendResponse)(res, {
+            success: true,
+            status: http_status_codes_1.StatusCodes.OK,
+            message: "No overdue books",
+            data: result
+        });
+    }
+    (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        status: http_status_codes_1.StatusCodes.OK,
+        message: "Overdue borrow list fetched",
+        data: result
+    });
+}));
 // return a book
 const returnBook = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { borrowId } = req.body;
-    const result = yield borrow_service_1.borrowRecordServices.returnBookIntoDB(borrowId);
+    yield borrow_service_1.borrowRecordServices.returnBookIntoDB(borrowId);
     (0, sendResponse_1.sendResponse)(res, {
         success: true,
         status: http_status_codes_1.StatusCodes.OK,
@@ -40,4 +58,5 @@ const returnBook = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
 exports.borrowRecordControllers = {
     borrowBook,
     returnBook,
+    getOverdueBorrowBooks,
 };

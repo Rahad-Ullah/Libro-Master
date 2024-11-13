@@ -23,4 +23,15 @@ app.get("/", (req, res) => {
         message: "Libro Master Server is running",
     });
 });
+// not found handler
+app.use((req, res, next) => {
+    res.status(400).json({
+        success: false,
+        message: "API not found",
+        error: {
+            path: req.originalUrl,
+            message: "Your requested API is not available",
+        },
+    });
+});
 exports.default = app;

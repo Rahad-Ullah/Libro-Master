@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application, NextFunction, Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import router from "./app/routes";
@@ -22,6 +22,18 @@ app.use(globalErrorHandler);
 app.get("/", (req: Request, res: Response) => {
   res.send({
     message: "Libro Master Server is running",
+  });
+});
+
+// not found handler
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.status(400).json({
+    success: false,
+    message: "API not found",
+    error: {
+      path: req.originalUrl,
+      message: "Your requested API is not available",
+    },
   });
 });
 
