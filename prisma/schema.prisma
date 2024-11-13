@@ -13,4 +13,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
+model Book {
+  bookId String @id @default(uuid())
+  title String
+  genre String
+  publishedYear Int
+  totalCopies Int
+  availableCopies Int
+}
