@@ -38,8 +38,32 @@ const getSingleMemberFromDB = async (memberId: string) => {
   return result;
 };
 
+// update single member
+const updateMemberIntoDB = async (memberId: string, payload: Partial<Member>) => {
+  const memberData = await prisma.member.findUnique({
+    where: {
+      memberId
+    }
+  })
+
+  // check if member exists
+  if(!memberData){
+    throw new Error('Member does not exist')
+  }
+
+  const result = await prisma.member.update({
+    where: {
+      memberId
+    },
+    data: payload
+  })
+
+  return result;
+};
+
 export const memberServices = {
   createMemberIntoDB,
   getAllMembersFromDB,
   getSingleMemberFromDB,
+  updateMemberIntoDB,
 };

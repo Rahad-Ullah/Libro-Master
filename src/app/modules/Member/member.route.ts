@@ -17,4 +17,7 @@ router.get("/", memberControllers.getAllMembers);
 // retrieve single member by memberId
 router.get("/:memberId", memberControllers.getSingleMember);
 
+// update member by memberId
+router.put("/:memberId", validateRequest(memberValidationSchemas.updateValidationSchema), memberControllers.updateMember);
+
 export const memberRoutes = router;
