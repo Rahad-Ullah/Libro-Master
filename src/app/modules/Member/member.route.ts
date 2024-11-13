@@ -14,4 +14,7 @@ router.post(
 // retrieve all members
 router.get("/", memberControllers.getAllMembers);
 
+// retrieve single member by memberId
+router.get("/:memberId", memberControllers.getSingleMember);
+
 export const memberRoutes = router;

@@ -36,7 +36,29 @@ const getAllMembers = catchAsync(async (req, res) => {
     });
 });
 
+// retrieve single member
+const getSingleMember = catchAsync(async (req, res) => {
+    const result = await memberServices.getSingleMemberFromDB(req.params.memberId);
+  
+    if(!result){
+        sendResponse(res, {
+            success: false,
+            status: StatusCodes.NOT_FOUND,
+            message: "The member does not exists",
+            data: result,
+        });
+    }
+    
+    sendResponse(res, {
+      success: true,
+      status: StatusCodes.OK,
+      message: "Member retrieved successfully",
+      data: result,
+    });
+});
+
 export const memberControllers = {
   createMember,
   getAllMembers,
+  getSingleMember,
 };
