@@ -6,7 +6,7 @@ export const sendResponse = <T>(
     success: boolean;
     status: number;
     message: string;
-    data: T | null | undefined;
+    data?: T | null | undefined;
   }
 ) => {
   res.status(jsonData.status).json({
