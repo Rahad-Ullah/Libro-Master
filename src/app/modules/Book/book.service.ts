@@ -1,5 +1,7 @@
 import { Book } from "@prisma/client";
 import prisma from "../../../utils/prisma";
+import AppError from "../../../utils/AppError";
+import { StatusCodes } from "http-status-codes";
 
 const createBookIntoDB = async (payload: Book) => {
   const bookData = await prisma.book.findFirst({
@@ -10,7 +12,7 @@ const createBookIntoDB = async (payload: Book) => {
 
   // check if the book already exists
   if (bookData) {
-    throw new Error(`This book already exists`);
+    throw new AppError(StatusCodes.CONFLICT, `This book already exists`);
   }
 
   const result = await prisma.book.create({
@@ -22,7 +24,7 @@ const createBookIntoDB = async (payload: Book) => {
 
 // retrieve all books
 const getAllBooksFromDB = async () => {
-  const result = await prisma.book.findMany()
+  const result = await prisma.book.findMany();
 
   return result;
 };
@@ -31,9 +33,9 @@ const getAllBooksFromDB = async () => {
 const getSingleBookFromDB = async (bookId: string) => {
   const result = await prisma.book.findUnique({
     where: {
-      bookId
-    }
-  })
+      bookId,
+    },
+  });
 
   return result;
 };
@@ -42,20 +44,20 @@ const getSingleBookFromDB = async (bookId: string) => {
 const updateBookIntoDB = async (bookId: string, payload: Partial<Book>) => {
   const bookData = await prisma.book.findUnique({
     where: {
-      bookId
-    }
-  })
-  
-  if(!bookData){
-    throw new Error('Book does not exist')
+      bookId,
+    },
+  });
+
+  if (!bookData) {
+    throw new AppError(StatusCodes.BAD_REQUEST, "Book does not exists");
   }
-  
+
   const result = await prisma.book.update({
     where: {
-      bookId
+      bookId,
     },
-    data: payload
-  })
+    data: payload,
+  });
 
   return result;
 };
@@ -64,19 +66,19 @@ const updateBookIntoDB = async (bookId: string, payload: Partial<Book>) => {
 const deleteBookFromDB = async (bookId: string) => {
   const bookData = await prisma.book.findUnique({
     where: {
-      bookId
-    }
-  })
-  
-  if(!bookData){
-    throw new Error('Book does not exist')
+      bookId,
+    },
+  });
+
+  if (!bookData) {
+    throw new AppError(StatusCodes.BAD_REQUEST, "Book does not exist");
   }
-  
+
   const result = await prisma.book.delete({
     where: {
-      bookId
-    }
-  })
+      bookId,
+    },
+  });
 
   return result;
 };

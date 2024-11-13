@@ -1,6 +1,8 @@
 import { BorrowRecord } from "@prisma/client";
 import prisma from "../../../utils/prisma";
 import { calculateOverdueBooks } from "../../../utils/calculateOverdueBooks";
+import AppError from "../../../utils/AppError";
+import { StatusCodes } from "http-status-codes";
 
 // borrow a book
 const borrowBookIntoDB = async (payload: BorrowRecord) => {
@@ -11,7 +13,7 @@ const borrowBookIntoDB = async (payload: BorrowRecord) => {
   });
   // check if the member exists
   if (!memberData) {
-    throw new Error("Invalid member ID");
+    throw new AppError(StatusCodes.BAD_REQUEST, "Invalid member ID");
   }
 
   const bookData = await prisma.book.findUnique({
@@ -21,7 +23,7 @@ const borrowBookIntoDB = async (payload: BorrowRecord) => {
   });
   // check if the book exists
   if (!bookData) {
-    throw new Error("Invalid book ID");
+    throw new AppError(StatusCodes.BAD_REQUEST, "Invalid book ID");
   }
 
   const result = await prisma.$transaction(async (transactionClient) => {
@@ -78,7 +80,7 @@ const returnBookIntoDB = async (borrowId: string) => {
 
   // check if the borrow data exists
   if (!borrowData) {
-    throw new Error("Invalid borrow ID");
+    throw new AppError(StatusCodes.BAD_REQUEST, "Invalid borrow ID");
   }
 
   const bookData = await prisma.book.findUnique({

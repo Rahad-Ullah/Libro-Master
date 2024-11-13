@@ -14,6 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.memberServices = void 0;
 const prisma_1 = __importDefault(require("../../../utils/prisma"));
+const AppError_1 = __importDefault(require("../../../utils/AppError"));
+const http_status_codes_1 = require("http-status-codes");
 const createMemberIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const memberData = yield prisma_1.default.member.findUnique({
         where: {
@@ -22,7 +24,7 @@ const createMemberIntoDB = (payload) => __awaiter(void 0, void 0, void 0, functi
     });
     // check if the member already exists
     if (memberData) {
-        throw new Error(`This member already exists`);
+        throw new AppError_1.default(http_status_codes_1.StatusCodes.CONFLICT, `This member already exists`);
     }
     const result = yield prisma_1.default.member.create({
         data: payload,
@@ -38,8 +40,8 @@ const getAllMembersFromDB = () => __awaiter(void 0, void 0, void 0, function* ()
 const getSingleMemberFromDB = (memberId) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield prisma_1.default.member.findUnique({
         where: {
-            memberId
-        }
+            memberId,
+        },
     });
     return result;
 });
@@ -47,18 +49,18 @@ const getSingleMemberFromDB = (memberId) => __awaiter(void 0, void 0, void 0, fu
 const updateMemberIntoDB = (memberId, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const memberData = yield prisma_1.default.member.findUnique({
         where: {
-            memberId
-        }
+            memberId,
+        },
     });
     // check if member exists
     if (!memberData) {
-        throw new Error('Member does not exist');
+        throw new AppError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, "Member does not exist");
     }
     const result = yield prisma_1.default.member.update({
         where: {
-            memberId
+            memberId,
         },
-        data: payload
+        data: payload,
     });
     return result;
 });
@@ -66,17 +68,17 @@ const updateMemberIntoDB = (memberId, payload) => __awaiter(void 0, void 0, void
 const deleteMemberFromDB = (memberId) => __awaiter(void 0, void 0, void 0, function* () {
     const memberData = yield prisma_1.default.member.findUnique({
         where: {
-            memberId
-        }
+            memberId,
+        },
     });
     // check if member exists
     if (!memberData) {
-        throw new Error('Member does not exist');
+        throw new AppError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, "Member does not exist");
     }
     const result = yield prisma_1.default.member.delete({
         where: {
-            memberId
-        }
+            memberId,
+        },
     });
     return result;
 });

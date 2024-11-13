@@ -14,6 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.bookServices = void 0;
 const prisma_1 = __importDefault(require("../../../utils/prisma"));
+const AppError_1 = __importDefault(require("../../../utils/AppError"));
+const http_status_codes_1 = require("http-status-codes");
 const createBookIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const bookData = yield prisma_1.default.book.findFirst({
         where: {
@@ -22,7 +24,7 @@ const createBookIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function
     });
     // check if the book already exists
     if (bookData) {
-        throw new Error(`This book already exists`);
+        throw new AppError_1.default(http_status_codes_1.StatusCodes.CONFLICT, `This book already exists`);
     }
     const result = yield prisma_1.default.book.create({
         data: payload,
@@ -38,8 +40,8 @@ const getAllBooksFromDB = () => __awaiter(void 0, void 0, void 0, function* () {
 const getSingleBookFromDB = (bookId) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield prisma_1.default.book.findUnique({
         where: {
-            bookId
-        }
+            bookId,
+        },
     });
     return result;
 });
@@ -47,17 +49,17 @@ const getSingleBookFromDB = (bookId) => __awaiter(void 0, void 0, void 0, functi
 const updateBookIntoDB = (bookId, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const bookData = yield prisma_1.default.book.findUnique({
         where: {
-            bookId
-        }
+            bookId,
+        },
     });
     if (!bookData) {
-        throw new Error('Book does not exist');
+        throw new AppError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, "Book does not exists");
     }
     const result = yield prisma_1.default.book.update({
         where: {
-            bookId
+            bookId,
         },
-        data: payload
+        data: payload,
     });
     return result;
 });
@@ -65,16 +67,16 @@ const updateBookIntoDB = (bookId, payload) => __awaiter(void 0, void 0, void 0, 
 const deleteBookFromDB = (bookId) => __awaiter(void 0, void 0, void 0, function* () {
     const bookData = yield prisma_1.default.book.findUnique({
         where: {
-            bookId
-        }
+            bookId,
+        },
     });
     if (!bookData) {
-        throw new Error('Book does not exist');
+        throw new AppError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, "Book does not exist");
     }
     const result = yield prisma_1.default.book.delete({
         where: {
-            bookId
-        }
+            bookId,
+        },
     });
     return result;
 });

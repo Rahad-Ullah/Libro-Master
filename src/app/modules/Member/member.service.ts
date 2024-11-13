@@ -1,5 +1,7 @@
 import { Member } from "@prisma/client";
 import prisma from "../../../utils/prisma";
+import AppError from "../../../utils/AppError";
+import { StatusCodes } from "http-status-codes";
 
 const createMemberIntoDB = async (payload: Member) => {
   const memberData = await prisma.member.findUnique({
@@ -10,7 +12,7 @@ const createMemberIntoDB = async (payload: Member) => {
 
   // check if the member already exists
   if (memberData) {
-    throw new Error(`This member already exists`);
+    throw new AppError(StatusCodes.CONFLICT, `This member already exists`);
   }
 
   const result = await prisma.member.create({
@@ -22,7 +24,7 @@ const createMemberIntoDB = async (payload: Member) => {
 
 // retrieve all members
 const getAllMembersFromDB = async () => {
-  const result = await prisma.member.findMany()
+  const result = await prisma.member.findMany();
 
   return result;
 };
@@ -31,32 +33,35 @@ const getAllMembersFromDB = async () => {
 const getSingleMemberFromDB = async (memberId: string) => {
   const result = await prisma.member.findUnique({
     where: {
-      memberId
-    }
-  })
+      memberId,
+    },
+  });
 
   return result;
 };
 
 // update single member
-const updateMemberIntoDB = async (memberId: string, payload: Partial<Member>) => {
+const updateMemberIntoDB = async (
+  memberId: string,
+  payload: Partial<Member>
+) => {
   const memberData = await prisma.member.findUnique({
     where: {
-      memberId
-    }
-  })
+      memberId,
+    },
+  });
 
   // check if member exists
-  if(!memberData){
-    throw new Error('Member does not exist')
+  if (!memberData) {
+    throw new AppError(StatusCodes.BAD_REQUEST, "Member does not exist");
   }
 
   const result = await prisma.member.update({
     where: {
-      memberId
+      memberId,
     },
-    data: payload
-  })
+    data: payload,
+  });
 
   return result;
 };
@@ -65,20 +70,20 @@ const updateMemberIntoDB = async (memberId: string, payload: Partial<Member>) =>
 const deleteMemberFromDB = async (memberId: string) => {
   const memberData = await prisma.member.findUnique({
     where: {
-      memberId
-    }
-  })
+      memberId,
+    },
+  });
 
   // check if member exists
-  if(!memberData){
-    throw new Error('Member does not exist')
+  if (!memberData) {
+    throw new AppError(StatusCodes.BAD_REQUEST, "Member does not exist");
   }
 
   const result = await prisma.member.delete({
     where: {
-      memberId
-    }
-  })
+      memberId,
+    },
+  });
 
   return result;
 };

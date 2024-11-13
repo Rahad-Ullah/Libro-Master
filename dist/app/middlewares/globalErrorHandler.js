@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const globalErrorHandler = (err, req, res, next) => {
-    res.status(500).json({
+    const status = (err === null || err === void 0 ? void 0 : err.statusCode) || 500;
+    res.status(status).json({
         success: false,
-        status: 500,
+        status,
         message: err.message || "Something went wrong",
     });
 };
