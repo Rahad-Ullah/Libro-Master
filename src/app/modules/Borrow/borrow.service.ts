@@ -1,7 +1,7 @@
 import { BorrowRecord } from "@prisma/client";
 import prisma from "../../../utils/prisma";
 
-const createBorrowIntoDB = async (payload: BorrowRecord) => {
+const borrowBookIntoDB = async (payload: BorrowRecord) => {
   const memberData = await prisma.member.findUnique({
     where: {
       memberId: payload.memberId,
@@ -31,6 +31,28 @@ const createBorrowIntoDB = async (payload: BorrowRecord) => {
   return result;
 };
 
+const returnBookIntoDB = async (borrowId: string) => {
+  const borrowData = await prisma.borrowRecord.findUnique({
+    where: {
+      borrowId,
+    },
+  });
+
+  // check if the borrow data exists
+  if (!borrowData) {
+    throw new Error("Invalid borrow ID");
+  }
+
+  const result = await prisma.borrowRecord.delete({
+    where: {
+      borrowId,
+    },
+  });
+
+  return result;
+};
+
 export const borrowRecordServices = {
-  createBorrowIntoDB,
+  borrowBookIntoDB,
+  returnBookIntoDB,
 };
