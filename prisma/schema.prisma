@@ -21,3 +21,12 @@ model Book {
   totalCopies Int
   availableCopies Int
 }
+
+
+model Member {
+  memberId String @id @default(uuid())
+  name String
+  email String @unique
+  phone String
+  membershipDate DateTime @default(now())
+}
