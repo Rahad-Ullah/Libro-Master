@@ -9,7 +9,6 @@ const borrowBookIntoDB = async (payload: BorrowRecord) => {
       memberId: payload.memberId,
     },
   });
-
   // check if the member exists
   if (!memberData) {
     throw new Error("Invalid member ID");
@@ -20,14 +19,27 @@ const borrowBookIntoDB = async (payload: BorrowRecord) => {
       bookId: payload.bookId,
     },
   });
-
   // check if the book exists
   if (!bookData) {
     throw new Error("Invalid book ID");
   }
 
-  const result = await prisma.borrowRecord.create({
-    data: payload,
+  const result = await prisma.$transaction(async (transactionClient) => {
+    const borrowData = await transactionClient.borrowRecord.create({
+      data: payload,
+    });
+
+    // decrease available copies by 1
+    await transactionClient.book.update({
+      where: {
+        bookId: payload.bookId,
+      },
+      data: {
+        availableCopies: bookData.availableCopies - 1,
+      },
+    });
+
+    return borrowData;
   });
 
   return result;
@@ -69,10 +81,31 @@ const returnBookIntoDB = async (borrowId: string) => {
     throw new Error("Invalid borrow ID");
   }
 
-  const result = await prisma.borrowRecord.delete({
+  const bookData = await prisma.book.findUnique({
     where: {
-      borrowId,
+      bookId: borrowData.bookId,
     },
+  });
+
+  const result = await prisma.$transaction(async (transactionClient) => {
+    // return the book
+    const returnData = await transactionClient.borrowRecord.delete({
+      where: {
+        borrowId,
+      },
+    });
+
+    // increase available copies by 1
+    await transactionClient.book.update({
+      where: {
+        bookId: bookData?.bookId,
+      },
+      data: {
+        availableCopies: bookData?.availableCopies! + 1,
+      },
+    });
+
+    return borrowData;
   });
 
   return result;
