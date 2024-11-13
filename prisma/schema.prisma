@@ -21,6 +21,8 @@ model Book {
   totalCopies     Int
   availableCopies Int
   borrowRecord    BorrowRecord[]
+
+  @@map("books")
 }
 
 model Member {
@@ -30,6 +32,8 @@ model Member {
   phone          String
   membershipDate DateTime       @default(now())
   borrowRecord   BorrowRecord[]
+
+  @@map("members")
 }
 
 model BorrowRecord {
@@ -40,4 +44,6 @@ model BorrowRecord {
   book       Book      @relation(fields: [bookId], references: [bookId])
   memberId   String
   member     Member    @relation(fields: [memberId], references: [memberId])
+
+  @@map("borrowRecords")
 }
